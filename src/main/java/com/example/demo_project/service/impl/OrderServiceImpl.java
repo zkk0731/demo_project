@@ -1,39 +1,37 @@
 package com.example.demo_project.service.impl;
 
+import org.springframework.stereotype.Service;
+
 import com.example.demo_project.entity.Menu;
 import com.example.demo_project.service.ifs.OrderService;
-
+@Service
 public class OrderServiceImpl implements OrderService {
 
-	Menu menu = new Menu();
+	
 	@Override
-	public void getPrice(String name) {
-		//Menu menu = new Menu();
-		if (name.equals("beef")) {
-			System.out.println("繺翴:" + name + "基 100");
-			menu.setPrice(100);
-		}
-		if (name.equals("pork")) {
-			System.out.println("繺翴:" + name + "基 90");
-			menu.setPrice(90);
-		}
-		if (name.equals("chicken")) {
-			System.out.println("繺翴:" + name + "基 80");
-			menu.setPrice(80);
-		}
+	public Menu setMenu(String name,int price) {
+		Menu menu = new Menu();
+		menu.setName(name);
+		menu.setPrice(price);
+		System.out.println("繺翴: "+ name +" 基: "+price);
+		return menu;
 	}
 
 	@Override
-	public void totalPrice(String name,int amount) {
+	public int order(Menu menu,int amount) {
 
-		getPrice(name);
-		System.out.println(menu.getPrice()*amount);
+		System.out.println("繺翴"+menu.getName()+ ","+ amount +",肂: "+menu.getPrice()*amount);
+		return menu.getPrice()*amount;
 	}
 
 	@Override
-	public void printInfo() {
-		// TODO Auto-generated method stub
-
+	public void printInfo(int total) {
+		
+		if (total >= 500) {
+			total *= 0.9;
+		}
+		System.out.println("羆肂: "+ total);
+		
 	}
 
 }

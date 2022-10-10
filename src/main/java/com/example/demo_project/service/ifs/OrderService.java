@@ -4,9 +4,9 @@ import com.example.demo_project.entity.Menu;
 
 public interface OrderService {
 
-	public void getPrice(String name);
+	public Menu setMenu(String name,int price);
 	
-	public void totalPrice(String name,int amount);
+	public int order(Menu menu,int amount);
 	
-	public  void printInfo();
+	public void printInfo(int total);
 }
