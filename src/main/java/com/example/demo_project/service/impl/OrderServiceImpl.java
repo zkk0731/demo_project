@@ -1,40 +1,111 @@
 package com.example.demo_project.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.example.demo_project.entity.Menu;
+import com.example.demo_project.repository.MenuDao;
 import com.example.demo_project.service.ifs.OrderService;
+import com.example.demo_project.vo.MenuReq;
+import com.example.demo_project.vo.MenuRes;
+
 @Service
 public class OrderServiceImpl implements OrderService {
 
-	
-	
+	@Autowired
+	private MenuDao menudao;
+//	Map<String, Integer> menuList = new HashMap<>();
+//	Menu beef = new Menu();
+//	Menu apple = new Menu();
+//	Menu pork = new Menu();
+
+	// int total = 0;
 	@Override
-	public Menu setMenu(String name,int price) {
+	public Menu setMenu(String name, int price) {
 		Menu menu = new Menu();
+		if (menudao.findById(name).isPresent()) {
+			menu = menudao.findById(name).get();
+			menu.setName(name);
+			menu.setPrice(price);
+			return menudao.save(menu);
+		}
+		
 		menu.setName(name);
 		menu.setPrice(price);
-		System.out.println("À\ÂI: "+ name +" »ù®æ¬°: "+price);
-		return menu;
+		return menudao.save(menu);
 	}
 
 	@Override
-	public int order(Menu menu,int amount) {
+	public List<Menu> getAllMenu() {
 
-		System.out.println("À\ÂI"+menu.getName()+ ","+ amount +"¥÷,ª÷ÃB¬°: "+menu.getPrice()*amount);
-		
-		return menu.getPrice()*amount;
+		return menudao.findAll();
 	}
 
 	@Override
-	public void printInfo(int total) {
+	public Menu getMenuByName(String name) {
+		return menudao.findById(name).orElse(null);
+	}
+
+//	@Override
+//	public int order(Menu menu, int amount) {
+//
+//		System.out.println("ï¿½\ï¿½I" + menu.getName() + "," + amount + "ï¿½ï¿½,ï¿½ï¿½ï¿½Bï¿½ï¿½: " + menu.getPrice() * amount);
+//
+//		return menu.getPrice() * amount;
+//	}
+
+//	@Override
+//	public void printInfo(int total) {
+//
+//		if (total >= 500) {
+//			total *= 0.9;
+//			System.out.println("ï¿½ï¿½ï¿½Oï¿½Wï¿½L500ï¿½ï¿½9ï¿½ï¿½");
+//		}
+//		System.out.println("ï¿½Hï¿½Wï¿½`ï¿½Bï¿½ï¿½: " + total);
+//
+//	}
+
+	@Override
+	public MenuRes orderMenu(List<MenuReq> orderList) {
+
+		int total = 0;		
+		MenuRes res = new MenuRes();		
+		List<String> messagelist = new ArrayList<String>();
 		
-		if (total >= 500) {
-			total *= 0.9;
-			System.out.println("®ø¶O¶W¹L500¥´9§é");
+		for (MenuReq order : orderList) {
+			if (!StringUtils.hasText(order.getName())) {
+				continue;
+			}
+			Optional<Menu> orderOp = menudao.findById(order.getName());
+			if (orderOp.isPresent()) {
+				if (order.getAmount() < 0) {
+					order.setAmount(0);
+				}
+				Menu menu = orderOp.get();
+				total += menu.getPrice() * order.getAmount();
+				messagelist.add(order.getName() + " " + order.getAmount() + "  "
+						+ menu.getPrice() * order.getAmount());
+			} else {
+				order.setAmount(0);
+				messagelist.add(order.getName() + " " + order.getAmount() + " ");
+			}
 		}
-		System.out.println("¥H¤WÁ`ÃB¬°: "+ total);
+
+		if (total > 500) {
+			messagelist.add("more than 500");
+			total *= 0.9;
+		}
+		// res.setOrderList(orderList);
+		res.setMessageList(messagelist);
+		res.setTotal(total);
+		res.setMessage("order success");
 		
+		return res;
 	}
 
 }

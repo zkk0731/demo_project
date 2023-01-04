@@ -1,9 +1,38 @@
 package com.example.demo_project.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "bank")
 public class Bank {
 
-	private String account = "abcde";
-	private int amount = 5000;
+	@Id
+	@Column(name = "account")
+	private String account;
+	
+	@Column(name = "amount")
+	private int amount;
+	
+	@Column(name = "name")
+	private String name;
+	
+	
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public Bank() {
+		
+	}
+	public Bank(String account) {
+		this.account = account;
+	}
 	
 	public String getAccount() {
 		return account;
